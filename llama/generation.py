@@ -41,6 +41,7 @@ class Llama:
         max_batch_size: int,
         model_parallel_size: Optional[int] = None,
         seed: int = 1,
+        device: Optional[torch.device] = None  # Added device argument
     ) -> "Llama":
         """
         Build a Llama instance by initializing and loading a model checkpoint.
@@ -52,17 +53,12 @@ class Llama:
             max_batch_size (int): Maximum batch size for inference.
             model_parallel_size (Optional[int], optional): Number of model parallel processes.
                 If not provided, it's determined from the environment. Defaults to None.
+            seed (int): Random seed for reproducibility.
+            device (Optional[torch.device], optional): CUDA device to load the model on.
+                Defaults to None, which will use the `local_rank` environment variable.
 
         Returns:
             Llama: An instance of the Llama class with the loaded model and tokenizer.
-
-        Raises:
-            AssertionError: If there are no checkpoint files in the specified directory,
-                or if the model parallel size does not match the number of checkpoint files.
-
-        Note:
-            This method initializes the distributed process group, sets the device to CUDA,
-            and loads the pre-trained model and tokenizer.
         """
         assert 1 <= max_seq_len <= 8192, f"max_seq_len must be between 1 and 8192, got {max_seq_len}."
         assert os.path.isdir(ckpt_dir), f"Checkpoint directory '{ckpt_dir}' does not exist."
@@ -75,13 +71,18 @@ class Llama:
                 model_parallel_size = int(os.environ.get("WORLD_SIZE", 1))
             initialize_model_parallel(model_parallel_size)
 
-        local_rank = int(os.environ.get("LOCAL_RANK", 0))
-        torch.cuda.set_device(local_rank)
+        # Determine the device to use
+        if device is None:
+            local_rank = int(os.environ.get("LOCAL_RANK", 0))
+            torch.cuda.set_device(local_rank)
+            device = torch.device(f"cuda:{local_rank}")
+        else:
+            torch.cuda.set_device(device)
 
-        # seed must be the same in all processes
+        # Set the manual seed for consistency across processes
         torch.manual_seed(seed)
 
-        if local_rank > 0:
+        if int(os.environ.get("LOCAL_RANK", 0)) > 0:
             sys.stdout = open(os.devnull, "w")
 
         start_time = time.time()
@@ -91,7 +92,7 @@ class Llama:
             checkpoints
         ), f"Loading a checkpoint for MP={len(checkpoints)} but world size is {model_parallel_size}"
         ckpt_path = checkpoints[get_model_parallel_rank()]
-        checkpoint = torch.load(ckpt_path, map_location="cpu")
+        checkpoint = torch.load(ckpt_path, map_location="cpu")  # Load on CPU first
         with open(Path(ckpt_dir) / "params.json", "r") as f:
             params = json.loads(f.read())
 
@@ -102,13 +103,19 @@ class Llama:
         )
         tokenizer = Tokenizer(model_path=tokenizer_path)
         assert model_args.vocab_size == tokenizer.n_words
+        
         if torch.cuda.is_bf16_supported():
             torch.set_default_tensor_type(torch.cuda.BFloat16Tensor)
         else:
             torch.set_default_tensor_type(torch.cuda.HalfTensor)
+
         model = Transformer(model_args)
         model.load_state_dict(checkpoint, strict=False)
-        print(f"Loaded in {time.time() - start_time:.2f} seconds")
+
+        # Move model to the correct device
+        model = model.to(device)
+
+        print(f"Loaded model in {time.time() - start_time:.2f} seconds on device {device}")
 
         return Llama(model, tokenizer)
 
@@ -146,6 +153,7 @@ class Llama:
             If logprobs is True, token log probabilities are computed for each generated token.
 
         """
+        device = torch.cuda.current_device()
         params = self.model.params
         bsz = len(prompt_tokens)
         assert bsz <= params.max_batch_size, (bsz, params.max_batch_size)
@@ -156,14 +164,14 @@ class Llama:
         total_len = min(params.max_seq_len, max_gen_len + max_prompt_len)
 
         pad_id = self.tokenizer.pad_id
-        tokens = torch.full((bsz, total_len), pad_id, dtype=torch.long, device="cuda")
+        tokens = torch.full((bsz, total_len), pad_id, dtype=torch.long, device=device)
         for k, t in enumerate(prompt_tokens):
-            tokens[k, : len(t)] = torch.tensor(t, dtype=torch.long, device="cuda")
+            tokens[k, : len(t)] = torch.tensor(t, dtype=torch.long, device=device)
         if logprobs:
             token_logprobs = torch.zeros_like(tokens, dtype=torch.float)
 
         prev_pos = 0
-        eos_reached = torch.tensor([False] * bsz, device="cuda")
+        eos_reached = torch.tensor([False] * bsz, device=device)
         input_text_mask = tokens != pad_id
         if min_prompt_len == total_len:
             logits = self.model.forward(tokens, prev_pos)

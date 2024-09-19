@@ -30,7 +30,7 @@ def SA_mul(A, B):
                 #result[i, j] = A[i, j] @ B[i, j]
                 print("Iteration ", i*Y+j)
                 result[i, j] = matmul_sa(A[i, j], B[i, j])
-        return result.to('cpu')
+        return result
 
 def quantize_mul(a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
     # Quantization
@@ -48,7 +48,7 @@ def quantize_mul(a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
     # Perform matrix multiplication
     #quant_result = quant_a @ quant_b
 
-    quant_result = SA_mul(quant_a, quant_b).cuda()
+    quant_result = SA_mul(quant_a, quant_b).to(a.device)
     # Dequantization (rescale to original factor)
     dequant_result = (quant_result / (127 * 127)) * (scale_a * scale_b)
     

@@ -41,12 +41,12 @@ def main(
     # Load the model on each GPU in a round-robin fashion
     generators = [
         Llama.build(
-            ckpt_dir=ckpt_dir,
-            tokenizer_path=tokenizer_path,
-            max_seq_len=max_seq_len,
-            max_batch_size=max_batch_size,
-            model_parallel_size=num_gpus,
-        ) for _ in range(num_gpus)
+            ckpt_dir="path/to/checkpoints",
+            tokenizer_path="path/to/tokenizer",
+            max_seq_len=512,
+            max_batch_size=16,
+            device=torch.device(f"cuda:{i}")
+        ) for i in range(num_gpus)
     ]
 
     # Preprocess IMDB data
