@@ -131,6 +131,7 @@ def main(
 
         # Gather results as they complete
         for future in as_completed(futures):
+            print(f"Processed {processed_batch_size} predictions")
             correct_predictions, processed_batch_size = future.result()
             total_correct_predictions += correct_predictions
 
