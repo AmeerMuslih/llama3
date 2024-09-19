@@ -26,6 +26,7 @@ def main(
     max_gen_len: Optional[int] = None,
     max_num_pred: int = 64,
     batch_size: int = 16,  # Batch size for processing
+    num_gpus: int = 1,  # Number of GPUs to use
 ):
     start_time = time.time()
 
@@ -44,6 +45,7 @@ def main(
             tokenizer_path=tokenizer_path,
             max_seq_len=max_seq_len,
             max_batch_size=max_batch_size,
+            model_parallel_size=num_gpus,
         ) for _ in range(num_gpus)
     ]
 
