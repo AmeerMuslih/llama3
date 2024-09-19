@@ -26,7 +26,6 @@ def main(
     max_gen_len: Optional[int] = None,
     max_num_pred: int = 64,
     batch_size: int = 16,  # Batch size for processing
-    num_gpus: int = 1,  # Number of GPUs to use
 ):
     start_time = time.time()
 
@@ -41,10 +40,10 @@ def main(
     # Load the model on each GPU in a round-robin fashion
     generators = [
         Llama.build(
-            ckpt_dir="path/to/checkpoints",
-            tokenizer_path="path/to/tokenizer",
-            max_seq_len=512,
-            max_batch_size=16,
+            ckpt_dir=ckpt_dir,
+            tokenizer_path=tokenizer_path,
+            max_seq_len=max_seq_len,
+            max_batch_size=max_batch_size,
             device=torch.device(f"cuda:{i}")
         ) for i in range(num_gpus)
     ]
