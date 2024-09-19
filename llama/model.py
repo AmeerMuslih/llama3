@@ -55,12 +55,12 @@ def quantize_mul(a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
     return dequant_result
 
 def myMatmul(A: torch.Tensor, B: torch.Tensor) -> torch.Tensor:
-    
+
     print(A.shape)
     print(B.shape)
-    #return quantize_mul(a, b)
 
-    return torch.matmul(A, B)
+    #return quantize_mul(a, b)
+    return A @ B
 
 
 @dataclass
