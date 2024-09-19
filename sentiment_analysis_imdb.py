@@ -84,6 +84,7 @@ def main(
                 correct_predictions += 1
 
             total_predictions += 1
+        print(f"finished {total_predictions} predictions")
 
     # Calculate accuracy
     accuracy = correct_predictions / total_predictions
