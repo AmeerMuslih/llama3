@@ -14,7 +14,6 @@ def preprocess_data():
     for label, review in imdb_data:
         reviews.append(review)
         labels.append(label)
-        #print(label)
     return reviews, labels
 
 def main(
@@ -29,20 +28,34 @@ def main(
     batch_size: int = 16,  # Batch size for processing
 ):
     start_time = time.time()
-    generator = Llama.build(
-        ckpt_dir=ckpt_dir,
-        tokenizer_path=tokenizer_path,
-        max_seq_len=max_seq_len,
-        max_batch_size=max_batch_size,
-    )
+
+    # Check if GPUs are available
+    if not torch.cuda.is_available():
+        raise RuntimeError("CUDA is not available. Please ensure you have a GPU setup.")
+    
+    # Get available GPU devices
+    num_gpus = torch.cuda.device_count()
+    print(f"Found {num_gpus} GPUs")
+
+    # Load the model on each GPU in a round-robin fashion
+    generators = [
+        Llama.build(
+            ckpt_dir=ckpt_dir,
+            tokenizer_path=tokenizer_path,
+            max_seq_len=max_seq_len,
+            max_batch_size=max_batch_size,
+        ).to(f"cuda:{i}") for i in range(num_gpus)
+    ]
 
     # Preprocess IMDB data
     reviews, true_labels = preprocess_data()
+
     # Shuffle the data
     combined = list(zip(reviews, true_labels))
     random.seed(42)
     random.shuffle(combined)
     reviews, true_labels = zip(*combined)
+
     # Divide reviews into batches
     batches = [
         reviews[i : i + batch_size]
@@ -52,7 +65,11 @@ def main(
     correct_predictions = 0
     total_predictions = 0
 
-    for batch in batches:
+    for i, batch in enumerate(batches):
+        # Assign a batch to a GPU based on round-robin assignment
+        gpu_id = i % num_gpus
+        generator = generators[gpu_id]
+
         dialogs = []
         for review in batch:
             dialogs.append([
@@ -67,7 +84,7 @@ def main(
                 {"role": "user", "content": review},
             ])
         
-        # Get predictions from the model
+        # Get predictions from the model on the selected GPU
         results = generator.chat_completion(
             dialogs,
             max_gen_len=max_gen_len,
@@ -90,7 +107,7 @@ def main(
                 correct_predictions += 1
 
             total_predictions += 1
-        print(f"finished {total_predictions} predictions")
+        print(f"Finished {total_predictions} predictions on GPU {gpu_id}")
         if total_predictions >= max_num_pred:
             break
 
