@@ -24,6 +24,7 @@ def main(
     max_seq_len: int = 512,
     max_batch_size: int = 4,
     max_gen_len: Optional[int] = None,
+    max_num_of_predictions: int = 64,
     batch_size: int = 16,  # Batch size for processing
 ):
     start_time = time.time()
@@ -85,6 +86,8 @@ def main(
 
             total_predictions += 1
         print(f"finished {total_predictions} predictions")
+        if total_predictions >= max_num_of_predictions:
+            break
 
     # Calculate accuracy
     accuracy = correct_predictions / total_predictions
