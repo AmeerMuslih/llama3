@@ -56,8 +56,8 @@ def quantize_mul(a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
 
 def myMatmul(A: torch.Tensor, B: torch.Tensor) -> torch.Tensor:
 
-    print(A.shape)
-    print(B.shape)
+    #print(A.shape)
+    #print(B.shape)
 
     #return quantize_mul(A, B)
     print(f'Working on GPU: {A.device}')
