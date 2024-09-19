@@ -77,9 +77,9 @@ def main(
             
             # Extract predicted sentiment from the response
             if "Positive" in response:
-                predicted_sentiment = 1
-            elif "Negative" in response:
                 predicted_sentiment = 2
+            elif "Negative" in response:
+                predicted_sentiment = 1
             
             if predicted_sentiment == true_label:
                 correct_predictions += 1
