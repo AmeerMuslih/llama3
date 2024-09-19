@@ -4,6 +4,7 @@ from llama import Dialog, Llama
 import torch
 from torchtext.datasets import IMDB
 from torch.utils.data import DataLoader
+import time
 
 def preprocess_data():
     # Load the IMDB dataset
@@ -25,6 +26,7 @@ def main(
     max_gen_len: Optional[int] = None,
     batch_size: int = 16,  # Batch size for processing
 ):
+    start_time = time.time()
     generator = Llama.build(
         ckpt_dir=ckpt_dir,
         tokenizer_path=tokenizer_path,
@@ -86,6 +88,9 @@ def main(
     # Calculate accuracy
     accuracy = correct_predictions / total_predictions
     print(f"Accuracy on IMDB dataset: {accuracy * 100:.2f}%")
+    end_time = time.time()
+    total_time = end_time - start_time
+    print(f"Total time taken: {total_time:.2f} seconds")
 
 if __name__ == "__main__":
     fire.Fire(main)
