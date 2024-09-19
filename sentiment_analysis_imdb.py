@@ -44,7 +44,7 @@ def main(
             tokenizer_path=tokenizer_path,
             max_seq_len=max_seq_len,
             max_batch_size=max_batch_size,
-        ).to(f"cuda:{i}") for i in range(num_gpus)
+        ) for _ in range(num_gpus)
     ]
 
     # Preprocess IMDB data

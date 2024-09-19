@@ -59,7 +59,7 @@ def myMatmul(A: torch.Tensor, B: torch.Tensor) -> torch.Tensor:
     print(A.shape)
     print(B.shape)
 
-    #return quantize_mul(a, b)
+    #return quantize_mul(A, B)
     return A @ B
 
 
