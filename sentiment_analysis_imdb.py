@@ -7,9 +7,12 @@ from torch.utils.data import DataLoader
 
 def preprocess_data():
     # Load the IMDB dataset
-    imdb_data = list(IMDB(split='test'))
-    reviews, labels = zip(*imdb_data)
-    
+    imdb_data = IMDB(split='test')
+    reviews, labels = [], []
+    for label, review in imdb_data:
+        reviews.append(review)
+        labels.append(label)
+        print(label)
     # Convert labels to binary format
     label_mapping = {'pos': 'Positive', 'neg': 'Negative'}
     labels = [label_mapping[label] for label in labels]
@@ -54,8 +57,7 @@ def main(
                     "content": (
                         "Analyze the sentiment of the following statement. "
                         "Return the response in this template:\n"
-                        "Sentiment: [Positive/Negative/Neutral]\n"
-                        "Confidence: [High/Medium/Low]\n"
+                        "Sentiment: [Positive/Negative]\n"
                     ),
                 },
                 {"role": "user", "content": review},
