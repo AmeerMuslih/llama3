@@ -41,7 +41,7 @@ def main(
                 "role": "system",
                 "content": "Always answer dad jokes",
             },
-            {"role": "user", "content": "Is the Technion any good?"},
+            {"role": "user", "content": "What do you think about dad jokes?"},
         ],
     ]
     results = generator.chat_completion(
