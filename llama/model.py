@@ -16,11 +16,27 @@ from fairscale.nn.model_parallel.layers import (
 from torch import nn
 
 def myMatmul(a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
-    #print(a.shape, b.shape)
-    #print(a)
-    return a @ b
-    # return SA
-    # return FI
+    # Quantization
+    scale_a = torch.max(torch.abs(a))
+    scale_b = torch.max(torch.abs(b))
+    
+    # Scale to [-128, 127] for 8-bit signed integers
+    quant_a = (a / scale_a) * 127
+    quant_b = (b / scale_b) * 127
+    
+    # Clamp to 8-bit range
+    quant_a = quant_a.round().clamp(-128, 127)
+    quant_b = quant_b.round().clamp(-128, 127)
+    
+    # Perform matrix multiplication
+    quant_result = quant_a @ quant_b
+    print(quant_a)
+    print(quant_b)
+    
+    # Dequantization (rescale to original factor)
+    dequant_result = (quant_result / (127 * 127)) * (scale_a * scale_b)
+    
+    return dequant_result
 @dataclass
 class ModelArgs:
     dim: int = 4096
