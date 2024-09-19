@@ -39,9 +39,30 @@ def main(
         [
             {
                 "role": "system",
-                "content": "Always answer dad jokes",
+                "content": "Respond with a funny joke to the following prompt.",
             },
-            {"role": "user", "content": "What do you think about dad jokes?"},
+            {"role": "user", "content": "How do you make a tissue dance?"},
+        ],
+        [
+            {
+                "role": "system",
+                "content": "Respond like Shakespeare to the following prompt.",
+            },
+            {"role": "user", "content": "How is the weather today"},
+        ],
+        [
+            {
+                "role": "system",
+                "content": "Respond with a funny joke to the following prompt.",
+            },
+            {"role": "user", "content": "What do you call a fake noodle?"},
+        ],
+        [
+            {
+                "role": "system",
+                "content": "Respond with a funny joke to the following prompt.",
+            },
+            {"role": "user", "content": "Why couldn't the bicycle stand up by itself?"},
         ],
     ]
     results = generator.chat_completion(
