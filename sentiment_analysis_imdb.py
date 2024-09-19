@@ -70,7 +70,7 @@ def main(
         # Assign a batch to a GPU based on round-robin assignment
         gpu_id = i % num_gpus
         generator = generators[gpu_id]
-
+        print(f'Processing batch {i} on GPU {gpu_id}')
         dialogs = []
         for review in batch:
             dialogs.append([
@@ -91,6 +91,7 @@ def main(
             max_gen_len=max_gen_len,
             temperature=temperature,
             top_p=top_p,
+            device=torch.device(f"cuda:{gpu_id}")
         )
 
         # Evaluate the results

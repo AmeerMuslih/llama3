@@ -41,7 +41,7 @@ class Llama:
         max_batch_size: int,
         model_parallel_size: Optional[int] = None,
         seed: int = 1,
-        device: Optional[torch.device] = None  # Added device argument
+        device: Optional[torch.device] = None
     ) -> "Llama":
         """
         Build a Llama instance by initializing and loading a model checkpoint.
@@ -133,6 +133,7 @@ class Llama:
         top_p: float = 0.9,
         logprobs: bool = False,
         echo: bool = False,
+        device: Optional[torch.device] = None
     ) -> Tuple[List[List[int]], Optional[List[List[float]]]]:
         """
         Generate text sequences based on provided prompts using the language generation model.
@@ -242,6 +243,7 @@ class Llama:
         max_gen_len: Optional[int] = None,
         logprobs: bool = False,
         echo: bool = False,
+        device: Optional[torch.device] = None
     ) -> List[CompletionPrediction]:
         """
         Perform text completion for a list of prompts using the language generation model.
@@ -273,6 +275,7 @@ class Llama:
             top_p=top_p,
             logprobs=logprobs,
             echo=echo,
+            device=device,
         )
         if logprobs:
             return [
@@ -292,6 +295,7 @@ class Llama:
         top_p: float = 0.9,
         max_gen_len: Optional[int] = None,
         logprobs: bool = False,
+        device: Optional[torch.device] = None
     ) -> List[ChatPrediction]:
         """
         Generate assistant responses for a list of conversational dialogs using the language generation model.
@@ -324,6 +328,7 @@ class Llama:
             temperature=temperature,
             top_p=top_p,
             logprobs=logprobs,
+            device=device,
         )
         if logprobs:
             return [
