@@ -32,7 +32,7 @@ def SA_mul(A, B):
                 result[i, j] = matmul_sa(A[i, j], B[i, j])
         return result.to('cpu')
 
-def myMatmul(a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
+def quantize_mul(a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
     # Quantization
     scale_a = torch.max(torch.abs(a))
     scale_b = torch.max(torch.abs(b))
@@ -53,6 +53,16 @@ def myMatmul(a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
     dequant_result = (quant_result / (127 * 127)) * (scale_a * scale_b)
     
     return dequant_result
+
+def myMatmul(A: torch.Tensor, B: torch.Tensor) -> torch.Tensor:
+    
+    print(A.shape)
+    print(B.shape)
+    #return quantize_mul(a, b)
+
+    return torch.matmul(A, B)
+
+
 @dataclass
 class ModelArgs:
     dim: int = 4096
