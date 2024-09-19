@@ -15,6 +15,23 @@ from fairscale.nn.model_parallel.layers import (
 )
 from torch import nn
 
+from Matmul_SA import matmul_sa
+
+def SA_mul(A, B):
+        X, Y, Z, W = A.shape
+        print(A.shape)
+        _, _, _, L = B.shape
+        print(B.shape)
+        result = torch.zeros((X, Y, Z, L))
+
+        for i in range(X):
+            for j in range(Y):
+                # Perform 2D matrix multiplication for each pair of 2D matrices in the last two dimensions
+                #result[i, j] = A[i, j] @ B[i, j]
+                print("Iteration ", i*Y+j)
+                result[i, j] = matmul_sa(A[i, j], B[i, j])
+        return result.to('cpu')
+
 def myMatmul(a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
     # Quantization
     scale_a = torch.max(torch.abs(a))
@@ -29,8 +46,9 @@ def myMatmul(a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
     quant_b = quant_b.round().clamp(-128, 127)
     
     # Perform matrix multiplication
-    quant_result = quant_a @ quant_b
-    
+    #quant_result = quant_a @ quant_b
+
+    quant_result = SA_mul(quant_a, quant_b).cuda()
     # Dequantization (rescale to original factor)
     dequant_result = (quant_result / (127 * 127)) * (scale_a * scale_b)
     

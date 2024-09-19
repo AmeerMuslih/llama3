@@ -40,6 +40,7 @@ def main(
     reviews, true_labels = preprocess_data()
     # Shuffle the data
     combined = list(zip(reviews, true_labels))
+    random.seed(42)
     random.shuffle(combined)
     reviews, true_labels = zip(*combined)
     # Divide reviews into batches
