@@ -56,6 +56,7 @@ def main(
     max_gen_len: Optional[int] = None,
     max_num_pred: int = 64,
     batch_size: int = 16,  # Batch size for processing
+    batch_start_idx: int = 0,  # Start index for saving output files
 ):
     start_time = time.time()
 
@@ -101,6 +102,8 @@ def main(
         futures = []
         
         for i, batch in enumerate(batches):
+            if i < batch_start_idx:
+                continue
             gpu_id = i % min(num_gpus, num_workers)  # Round-robin GPU selection
             generator = generators[gpu_id]
             device = torch.device(f"cuda:{gpu_id}")
