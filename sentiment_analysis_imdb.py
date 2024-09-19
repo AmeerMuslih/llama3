@@ -136,6 +136,7 @@ def main(
 
     # Calculate accuracy
     accuracy = total_correct_predictions / total_predictions
+    print(f"Total predictions: {total_predictions}")
     print(f"Accuracy on IMDB dataset: {accuracy * 100:.2f}%")
     end_time = time.time()
     total_time = end_time - start_time
