@@ -12,11 +12,7 @@ def preprocess_data():
     for label, review in imdb_data:
         reviews.append(review)
         labels.append(label)
-        print(label)
-    # Convert labels to binary format
-    label_mapping = {'pos': 'Positive', 'neg': 'Negative'}
-    labels = [label_mapping[label] for label in labels]
-    
+        #print(label)
     return reviews, labels
 
 def main(
@@ -78,9 +74,9 @@ def main(
             
             # Extract predicted sentiment from the response
             if "Positive" in response:
-                predicted_sentiment = "Positive"
+                predicted_sentiment = 1
             elif "Negative" in response:
-                predicted_sentiment = "Negative"
+                predicted_sentiment = 2
             
             if predicted_sentiment == true_label:
                 correct_predictions += 1
