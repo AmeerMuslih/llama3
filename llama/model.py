@@ -218,13 +218,13 @@ class Attention(nn.Module):
         values = values.transpose(
             1, 2
         )  # (bs, n_local_heads, cache_len + seqlen, head_dim)
-        #scores = myMatmul(xq, keys.transpose(2, 3)) / math.sqrt(self.head_dim)
-        scores = torch.matmul(xq, keys.transpose(2, 3)) / math.sqrt(self.head_dim)
+        scores = myMatmul(xq, keys.transpose(2, 3)) / math.sqrt(self.head_dim)
+        #scores = torch.matmul(xq, keys.transpose(2, 3)) / math.sqrt(self.head_dim)
         if mask is not None:
             scores = scores + mask  # (bs, n_local_heads, seqlen, cache_len + seqlen)
         scores = F.softmax(scores.float(), dim=-1).type_as(xq)
-        #output = myMatmul(scores, values)  # (bs, n_local_heads, seqlen, head_dim)
-        output = torch.matmul(scores, values)  # (bs, n_local_heads, seqlen, head_dim)
+        output = myMatmul(scores, values)  # (bs, n_local_heads, seqlen, head_dim)
+        #output = torch.matmul(scores, values)  # (bs, n_local_heads, seqlen, head_dim)
         #output = output.transpose(1, 2).contiguous().view(bsz, seqlen, -1)
         return self.wo(output)
 
@@ -293,6 +293,7 @@ class Transformer(nn.Module):
         self.params = params
         self.vocab_size = params.vocab_size
         self.n_layers = params.n_layers
+        print(f'Number of layers: {self.n_layers}')
 
         self.tok_embeddings = VocabParallelEmbedding(
             params.vocab_size, params.dim, init_method=lambda x: x
