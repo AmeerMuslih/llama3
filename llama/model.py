@@ -30,8 +30,6 @@ def myMatmul(a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
     
     # Perform matrix multiplication
     quant_result = quant_a @ quant_b
-    print(quant_a)
-    print(quant_b)
     
     # Dequantization (rescale to original factor)
     dequant_result = (quant_result / (127 * 127)) * (scale_a * scale_b)
