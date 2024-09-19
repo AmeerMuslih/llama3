@@ -154,7 +154,6 @@ class Llama:
             If logprobs is True, token log probabilities are computed for each generated token.
 
         """
-        device = torch.cuda.current_device()
         params = self.model.params
         bsz = len(prompt_tokens)
         assert bsz <= params.max_batch_size, (bsz, params.max_batch_size)
