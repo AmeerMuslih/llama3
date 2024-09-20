@@ -62,10 +62,10 @@ def main(
                 {
                     "role": "system",
                     "content": (
-                        "Analyze the sentiment of the following statement. "
-                        "Return the response in this template:\n"
-                        "Sentiment: [Positive/Negative]\n"
-                    ),
+                        "Analyze the sentiment of the following movie review from the IMDB dataset. "
+                        "Consider the overall tone, emotional language, and context to determine if the sentiment is Positive or Negative. "
+                        "Return only 'Sentiment: Positive' or 'Sentiment: Negative'."
+                    )
                 },
                 {"role": "user", "content": review},
             ])
