@@ -21,9 +21,9 @@ from Matmul_SA import matmul_sa
 
 def SA_mul(A, B):
         X, Y, Z, W = A.shape
-        print(A.shape)
+        #print(A.shape)
         _, _, _, L = B.shape
-        print(B.shape)
+        #print(B.shape)
         result = torch.zeros((X, Y, Z, L))
         start_time = time.time()
         
@@ -74,7 +74,7 @@ def myMatmul(A: torch.Tensor, B: torch.Tensor, layer_id: int, mul: int) -> torch
     print(A.shape)
     print(B.shape)
 
-    if layer_id in [2,7,26] and mul ==1:
+    if False:# layer_id in [2,7,26] and mul ==1:
         return quantize_mul(A, B, layer_id, mul)
     else:
         return A @ B
