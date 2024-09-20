@@ -27,6 +27,7 @@ def main(
     max_gen_len: Optional[int] = None,
     max_num_pred: int = 64,
     batch_size: int = 16,  # Batch size for processing
+    batch_start_idx: int = 0,  # Start index for processing
 ):
     start_time = time.time()
     generator = Llama.build(
@@ -52,7 +53,9 @@ def main(
     correct_predictions = 0
     total_predictions = 0
 
-    for batch in batches:
+    for i, batch in enumerate(batches):
+        if i < batch_start_idx:
+            continue
         dialogs = []
         for review in batch:
             dialogs.append([
