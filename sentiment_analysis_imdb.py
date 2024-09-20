@@ -64,7 +64,7 @@ def main(
                     "content": (
                         "Analyze the sentiment of the following movie review from the IMDB dataset. "
                         "Consider the overall tone, emotional language, and context to determine if the sentiment is Positive or Negative. "
-                        "Return only 'Sentiment: Positive' or 'Sentiment: Negative'."
+                        "Return only 'Sentiment: Positive' or 'Sentiment: Negative', Never respond with 'Sentiment: Neutral'."
                     )
                 },
                 {"role": "user", "content": review},
@@ -88,9 +88,9 @@ def main(
             print(f"Response: {response}")
             # Extract predicted sentiment from the response
             if "Positive" in response:
-                predicted_sentiment = 2
-            elif "Negative" in response:
                 predicted_sentiment = 1
+            elif "Negative" in response:
+                predicted_sentiment = 2
             
             if predicted_sentiment == true_label:
                 correct_predictions += 1
