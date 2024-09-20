@@ -74,7 +74,7 @@ def myMatmul(A: torch.Tensor, B: torch.Tensor, start_pos: int, layer_id: int, mu
     #print(A.shape)
     #print(B.shape)
 
-    if layer_id in [2,7,26]:
+    if False:#layer_id in [2,7,26]:
         return quantize_mul(A, B, start_pos, layer_id, mul)
     else:
         return A @ B
