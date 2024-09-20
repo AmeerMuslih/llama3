@@ -1,3 +1,4 @@
+import os
 import random
 from typing import List, Optional
 import fire
@@ -52,14 +53,15 @@ def main(
     temperature: float = 0.6,
     top_p: float = 0.9,
     max_seq_len: int = 512,
-    max_batch_size: int = 4,
+    max_batch_size: int = 1,
     max_gen_len: Optional[int] = None,
     max_num_pred: int = 64,
-    batch_size: int = 16,  # Batch size for processing
+    batch_size: int = 1,  # Batch size for processing
     batch_start_idx: int = 0,  # Start index for saving output files
+    group_id: int = 0,  # Group ID for saving output files
 ):
     start_time = time.time()
-
+    os.environ['group_id'] = str(group_id)
     # Check if GPUs are available
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is not available. Please ensure you have a GPU setup.")
@@ -134,9 +136,9 @@ def main(
 
         # Gather results as they complete
         for future in as_completed(futures):
-            print(f"Processed {processed_batch_size} predictions")
             correct_predictions, processed_batch_size = future.result()
             total_correct_predictions += correct_predictions
+            print(f"Processed {processed_batch_size} predictions")
 
     # Calculate accuracy
     accuracy = total_correct_predictions / total_predictions

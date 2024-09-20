@@ -39,7 +39,8 @@ def SA_mul(A, B):
 def helper(A, B, layer, mul_num):
     res = A @ B
     device_index = A.device.index
-    folder = f'/home/a.mosa/Ameer/llama3_2/Matrices/Group_{device_index}_{layer}_{mul_num}'
+    group_id = int(os.environ['group_id'])
+    folder = f'/home/a.mosa/Ameer/llama3_2/Matrices/Group_{group_id}_{device_index}_{layer}_{mul_num}'
     os.makedirs(folder, exist_ok=True)
     torch.save(A.detach().cpu(), f'{folder}/mat_A.pt')
     torch.save(B.detach().cpu(), f'{folder}/mat_B.pt')
@@ -70,12 +71,12 @@ def quantize_mul(a: torch.Tensor, b: torch.Tensor, layer_id: int, mul: int) -> t
 
 def myMatmul(A: torch.Tensor, B: torch.Tensor, layer_id: int, mul: int) -> torch.Tensor:
 
-    #print(A.shape)
-    #print(B.shape)
+    print(A.shape)
+    print(B.shape)
 
-    #return quantize_mul(A, B, layer_id, mul)
+    return quantize_mul(A, B, layer_id, mul)
     #print(f'Working on GPU: {A.device}')
-    return A @ B
+    #return A @ B
 
 
 @dataclass
