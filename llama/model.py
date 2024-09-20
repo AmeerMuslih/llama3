@@ -36,17 +36,17 @@ def SA_mul(A, B):
         print("Time taken: ", time.time() - start_time)
         return result
 
-def helper(A, B, layer, mul_num):
+def helper(A, B, start_pos, layer, mul_num):
     res = A @ B
     device_index = A.device.index
     group_id = int(os.environ['group_id'])
-    folder = f'/home/a.mosa/Ameer/llama3/Matrices/Group_{group_id}_{device_index}_{layer}_{mul_num}'
+    folder = f'/home/a.mosa/Ameer/llama3/Matrices/Group_{group_id}_{device_index}_{start_pos}_{layer}_{mul_num}'
     os.makedirs(folder, exist_ok=True)
     torch.save(A.detach().cpu(), f'{folder}/mat_A.pt')
     torch.save(B.detach().cpu(), f'{folder}/mat_B.pt')
     return res
 
-def quantize_mul(a: torch.Tensor, b: torch.Tensor, layer_id: int, mul: int) -> torch.Tensor:
+def quantize_mul(a: torch.Tensor, b: torch.Tensor, start_pos: int, layer_id: int, mul: int) -> torch.Tensor:
     # Quantization
     scale_a = torch.max(torch.abs(a))
     scale_b = torch.max(torch.abs(b))
@@ -62,20 +62,20 @@ def quantize_mul(a: torch.Tensor, b: torch.Tensor, layer_id: int, mul: int) -> t
     # Perform matrix multiplication
     #quant_result = quant_a @ quant_b
 
-    quant_result = SA_mul(quant_a, quant_b).to(a.device)
-    #quant_result = helper(quant_a, quant_b, layer_id, mul)
+    #quant_result = SA_mul(quant_a, quant_b).to(a.device)
+    quant_result = helper(quant_a, quant_b, start_pos, layer_id, mul)
     # Dequantization (rescale to original factor)
     dequant_result = (quant_result / (127 * 127)) * (scale_a * scale_b)
     
     return dequant_result
 
-def myMatmul(A: torch.Tensor, B: torch.Tensor, layer_id: int, mul: int) -> torch.Tensor:
+def myMatmul(A: torch.Tensor, B: torch.Tensor, start_pos: int, layer_id: int, mul: int) -> torch.Tensor:
 
     #print(A.shape)
     #print(B.shape)
 
-    if False:# layer_id in [2,7,26]:
-        return quantize_mul(A, B, layer_id, mul)
+    if layer_id in [2,7,26]:
+        return quantize_mul(A, B, start_pos, layer_id, mul)
     else:
         return A @ B
 
@@ -246,12 +246,12 @@ class Attention(nn.Module):
         values = values.transpose(
             1, 2
         )  # (bs, n_local_heads, cache_len + seqlen, head_dim)
-        scores = myMatmul(xq, keys.transpose(2, 3), layer_id, 1) / math.sqrt(self.head_dim)
+        scores = myMatmul(xq, keys.transpose(2, 3), start_pos, layer_id, 1) / math.sqrt(self.head_dim)
         #scores = torch.matmul(xq, keys.transpose(2, 3)) / math.sqrt(self.head_dim)
         if mask is not None:
             scores = scores + mask  # (bs, n_local_heads, seqlen, cache_len + seqlen)
         scores = F.softmax(scores.float(), dim=-1).type_as(xq)
-        output = myMatmul(scores, values, layer_id, 2)  # (bs, n_local_heads, seqlen, head_dim)
+        output = myMatmul(scores, values, start_pos, layer_id, 2)  # (bs, n_local_heads, seqlen, head_dim)
         #output = torch.matmul(scores, values)  # (bs, n_local_heads, seqlen, head_dim)
         output = output.transpose(1, 2).contiguous().view(bsz, seqlen, -1)
         return self.wo(output)

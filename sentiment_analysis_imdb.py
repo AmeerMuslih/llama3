@@ -127,6 +127,7 @@ def main(
                 ])
 
             # Submit a batch to be processed in parallel on a GPU
+            print(f"Processing batch {i}")
             futures.append(
                 executor.submit(process_batch_on_gpu, generator, dialogs, max_gen_len, temperature, top_p, device, true_label_batch)
             )
