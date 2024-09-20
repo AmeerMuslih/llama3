@@ -70,12 +70,12 @@ def quantize_mul(a: torch.Tensor, b: torch.Tensor, layer_id: int, mul: int) -> t
 
 def myMatmul(A: torch.Tensor, B: torch.Tensor, layer_id: int, mul: int) -> torch.Tensor:
 
-    print(A.shape)
-    print(B.shape)
+    #print(A.shape)
+    #print(B.shape)
 
-    return quantize_mul(A, B, layer_id, mul)
+    #return quantize_mul(A, B, layer_id, mul)
     #print(f'Working on GPU: {A.device}')
-    #return A @ B
+    return A @ B
 
 
 @dataclass
