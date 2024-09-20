@@ -31,7 +31,7 @@ def SA_mul(A, B):
             for j in range(Y):
                 # Perform 2D matrix multiplication for each pair of 2D matrices in the last two dimensions
                 #result[i, j] = A[i, j] @ B[i, j]
-                print("Iteration ", i*Y+j)
+                #print("Iteration ", i*Y+j)
                 result[i, j] = matmul_sa(A[i, j], B[i, j])
         print("Time taken: ", time.time() - start_time)
         return result
@@ -62,8 +62,8 @@ def quantize_mul(a: torch.Tensor, b: torch.Tensor, layer_id: int, mul: int) -> t
     # Perform matrix multiplication
     #quant_result = quant_a @ quant_b
 
-    #quant_result = SA_mul(quant_a, quant_b).to(a.device)
-    quant_result = helper(quant_a, quant_b, layer_id, mul)
+    quant_result = SA_mul(quant_a, quant_b).to(a.device)
+    #quant_result = helper(quant_a, quant_b, layer_id, mul)
     # Dequantization (rescale to original factor)
     dequant_result = (quant_result / (127 * 127)) * (scale_a * scale_b)
     
@@ -74,9 +74,10 @@ def myMatmul(A: torch.Tensor, B: torch.Tensor, layer_id: int, mul: int) -> torch
     print(A.shape)
     print(B.shape)
 
-    return quantize_mul(A, B, layer_id, mul)
-    #print(f'Working on GPU: {A.device}')
-    #return A @ B
+    if layer_id in [2,7,26] and mul ==1:
+        return quantize_mul(A, B, layer_id, mul)
+    else:
+        return A @ B
 
 
 @dataclass
@@ -311,7 +312,7 @@ class TransformerBlock(nn.Module):
     ):
         h = x + self.attention(self.attention_norm(x), start_pos, freqs_cis, mask, self.layer_id)
         out = h + self.feed_forward(self.ffn_norm(h))
-        print("Layer ", self.layer_id, " Done")
+        #print("Layer ", self.layer_id, " Done")
         return out
 
 
@@ -321,7 +322,7 @@ class Transformer(nn.Module):
         self.params = params
         self.vocab_size = params.vocab_size
         self.n_layers = params.n_layers
-        print(f'Number of layers: {self.n_layers}')
+        #print(f'Number of layers: {self.n_layers}')
 
         self.tok_embeddings = VocabParallelEmbedding(
             params.vocab_size, params.dim, init_method=lambda x: x

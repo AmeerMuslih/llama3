@@ -161,10 +161,12 @@ class Llama:
 
         min_prompt_len = min(len(t) for t in prompt_tokens)
         max_prompt_len = max(len(t) for t in prompt_tokens)
-        print(f'Min prompt len: {min_prompt_len}, max prompt len: {max_prompt_len}')
+        #
+        # print(f'Min prompt len: {min_prompt_len}, max prompt len: {max_prompt_len}')
         assert max_prompt_len <= params.max_seq_len
         total_len = min(params.max_seq_len, max_gen_len + max_prompt_len)
-        print(f'Max gen len: {max_gen_len}, total len: {total_len}')
+        #
+        # print(f'Max gen len: {max_gen_len}, total len: {total_len}')
         pad_id = self.tokenizer.pad_id
         tokens = torch.full((bsz, total_len), pad_id, dtype=torch.long, device=device)
         for k, t in enumerate(prompt_tokens):
@@ -187,6 +189,7 @@ class Llama:
         stop_tokens = torch.tensor(list(self.tokenizer.stop_tokens))
 
         for cur_pos in range(min_prompt_len, total_len):
+            print(f'Current position: {cur_pos}')
             logits = self.model.forward(tokens[:, prev_pos:cur_pos], prev_pos)
             if temperature > 0:
                 probs = torch.softmax(logits[:, -1] / temperature, dim=-1)
