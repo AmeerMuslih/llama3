@@ -3,6 +3,7 @@
 
 import math
 from dataclasses import dataclass
+import time
 from typing import Optional, Tuple
 
 import fairscale.nn.model_parallel.initialize as fs_init
@@ -23,13 +24,14 @@ def SA_mul(A, B):
         _, _, _, L = B.shape
         print(B.shape)
         result = torch.zeros((X, Y, Z, L))
-
+        start_time = time.time()
         for i in range(X):
             for j in range(Y):
                 # Perform 2D matrix multiplication for each pair of 2D matrices in the last two dimensions
                 #result[i, j] = A[i, j] @ B[i, j]
                 #print("Iteration ", i*Y+j)
                 result[i, j] = matmul_sa(A[i, j], B[i, j])
+        print("Time taken: ", time.time() - start_time)
         return result
 
 def quantize_mul(a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
