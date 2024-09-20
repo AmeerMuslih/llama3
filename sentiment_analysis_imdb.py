@@ -79,7 +79,7 @@ def main(
         )
 
         # Evaluate the results
-        for result, true_label in zip(results, true_labels[total_predictions:total_predictions+batch_size]):
+        for result, true_label in zip(results, true_labels[total_predictions+batch_start_idx*batch_size:total_predictions+batch_size*(batch_start_idx+1)]):
             response = result['generation']['content']
             predicted_sentiment = 'Neutral'  # Default sentiment
             
