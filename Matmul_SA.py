@@ -1,3 +1,4 @@
+import time
 import torch
 import c_smt_sa
 import sys
@@ -64,3 +65,28 @@ def matmul_sa(tensor_a, tensor_b):
 	#print("Cycles = ", cycles)
 	#print(dut.shape)
 	return dut
+
+def main():
+	start_time = time.time()
+	parser = argparse.ArgumentParser(description='Matrix Multiplication using Systolic Array')
+	parser.add_argument('--group_id', type=int, required=True, help='Group ID of the matrices')
+	parser.add_argument('--device_index', type=int, required=True, help='Device index')
+	parser.add_argument('--layer', type=int, required=True, help='Layer number')
+	parser.add_argument('--mul_num', type=int, required=True, help='Multiplication number')
+	args = parser.parse_args()
+
+	folder = f'/home/a.mosa/Ameer/llama3/Matrices/Group_{args.group_id}_{args.device_index}_{args.layer}_{args.mul_num}'
+	
+	mat_A_path = f'{folder}/mat_A.pt'
+	mat_B_path = f'{folder}/mat_B.pt'
+	
+	if not os.path.exists(mat_A_path) or not os.path.exists(mat_B_path):
+		print(f'Matrix files not found in {folder}')
+		sys.exit(1)
+	
+	tensor_a = torch.load(mat_A_path)
+	tensor_b = torch.load(mat_B_path)
+	
+	result = matmul_sa(tensor_a, tensor_b)
+	print("Matrix multiplication result shape:", result.shape)
+	print(f'Time taken: {time.time() - start_time:.2f} seconds')
