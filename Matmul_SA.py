@@ -66,6 +66,24 @@ def matmul_sa(tensor_a, tensor_b):
 	#print(dut.shape)
 	return dut
 
+def SA_mul(A, B):
+        X, Y, Z, W = A.shape
+        print(A.shape)
+        _, _, _, L = B.shape
+        print(B.shape)
+        result = torch.zeros((X, Y, Z, L))
+        
+        
+        for i in range(X):
+            for j in range(Y):
+                # Perform 2D matrix multiplication for each pair of 2D matrices in the last two dimensions
+                #result[i, j] = A[i, j] @ B[i, j]
+                print("Iteration ", i*Y+j)
+                start_time = time.time()
+                result[i, j] = matmul_sa(A[i, j], B[i, j])
+                print("Time taken: ", time.time() - start_time)
+        return result
+
 def main():
 	start_time = time.time()
 	parser = argparse.ArgumentParser(description='Matrix Multiplication using Systolic Array')
@@ -87,6 +105,6 @@ def main():
 	tensor_a = torch.load(mat_A_path)
 	tensor_b = torch.load(mat_B_path)
 	
-	result = matmul_sa(tensor_a, tensor_b)
+	result = SA_mul(tensor_a, tensor_b)
 	print("Matrix multiplication result shape:", result.shape)
-	print(f'Time taken: {time.time() - start_time:.2f} seconds')
+	print(f'Total Time taken: {time.time() - start_time:.2f} seconds')
