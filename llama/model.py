@@ -40,7 +40,7 @@ def helper(A, B, layer, mul_num):
     res = A @ B
     device_index = A.device.index
     group_id = int(os.environ['group_id'])
-    folder = f'/home/a.mosa/Ameer/llama3_2/Matrices/Group_{group_id}_{device_index}_{layer}_{mul_num}'
+    folder = f'/home/a.mosa/Ameer/llama3/Matrices/Group_{group_id}_{device_index}_{layer}_{mul_num}'
     os.makedirs(folder, exist_ok=True)
     torch.save(A.detach().cpu(), f'{folder}/mat_A.pt')
     torch.save(B.detach().cpu(), f'{folder}/mat_B.pt')
