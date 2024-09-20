@@ -84,7 +84,7 @@ def SA_mul(A, B):
                 print("Time taken: ", time.time() - start_time)
         return result
 
-def main():
+if __name__ == '__main__':
 	start_time = time.time()
 	parser = argparse.ArgumentParser(description='Matrix Multiplication using Systolic Array')
 	parser.add_argument('--group_id', type=int, required=True, help='Group ID of the matrices')
