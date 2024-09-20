@@ -16,8 +16,8 @@ from fairscale.nn.model_parallel.layers import (
 from torch import nn
 
 def myMatmul(a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
-    print(a.shape, b.shape)
-    print(a)
+    #print(a.shape, b.shape)
+    #print(a)
     return a @ b
     # return SA
     # return FI
