@@ -40,10 +40,10 @@ def main(
     # Preprocess IMDB data
     reviews, true_labels = preprocess_data()
     # Shuffle the data
-    combined = list(zip(reviews, true_labels))
-    random.seed(42)
-    random.shuffle(combined)
-    reviews, true_labels = zip(*combined)
+    #combined = list(zip(reviews, true_labels))
+    #random.seed(42)
+    #random.shuffle(combined)
+    #reviews, true_labels = zip(*combined)
     # Divide reviews into batches
     batches = [
         reviews[i : i + batch_size]
