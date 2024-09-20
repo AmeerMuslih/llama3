@@ -28,7 +28,7 @@ def SA_mul(A, B):
             for j in range(Y):
                 # Perform 2D matrix multiplication for each pair of 2D matrices in the last two dimensions
                 #result[i, j] = A[i, j] @ B[i, j]
-                print("Iteration ", i*Y+j)
+                #print("Iteration ", i*Y+j)
                 result[i, j] = matmul_sa(A[i, j], B[i, j])
         return result
 
@@ -295,6 +295,7 @@ class TransformerBlock(nn.Module):
     ):
         h = x + self.attention(self.attention_norm(x), start_pos, freqs_cis, mask)
         out = h + self.feed_forward(self.ffn_norm(h))
+        print("Layer ", self.layer_id, " Done")
         return out
 
 

@@ -160,7 +160,7 @@ std::vector<torch::Tensor> smt_sa_os<T>::go(vector<tile_idx> &tile_vec) {
     uint32_t computed = 0;
     uint32_t while_end = tile_vec.size() * _dim * _dim;
     // cout << "while_end: " << while_end << endl;
-    cout << "Tile Vec Size: " << tile_vec.size() << endl;
+    //cout << "Tile Vec Size: " << tile_vec.size() << endl;
 	//cout << while_end << endl;
     while (computed < while_end) {
         sa_grid.cycle(PUs_access_count,Accumulator_bits_count,InputA_Bits_count,InputB_Bits_count,MultiplierToggleCount,AccumulatorToggleCount,InputAToggleCount,InputBToggleCount);
@@ -209,7 +209,7 @@ std::vector<torch::Tensor> smt_sa_os<T>::go(vector<tile_idx> &tile_vec) {
                     sa_grid.push(tile_a[t], tile_b[t], t);
 				//cout <<"Tile A: " << tile_a[0].sizes() <<" " << "Tile B: " << tile_b[0].sizes()<<endl;
                 global_tile_idx++;
-				cout << "cycles: " << cycles << endl;
+				//cout << "cycles: " << cycles << endl;
             }
         }
 
