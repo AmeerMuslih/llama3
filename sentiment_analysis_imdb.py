@@ -55,7 +55,7 @@ def main(
     max_batch_size: int = 4,
     max_gen_len: Optional[int] = None,
     max_num_pred: int = 64,
-    batch_size: int = 1,  # Batch size for processing
+    batch_size: int = 16,  # Batch size for processing
     batch_start_idx: int = 0,  # Start index for saving output files
 ):
     start_time = time.time()
