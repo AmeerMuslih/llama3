@@ -83,6 +83,9 @@ def main(
             response = result['generation']['content']
             predicted_sentiment = 'Neutral'  # Default sentiment
             
+            print("Review: ", batch[total_predictions % batch_size])
+            print(f"True label: {true_label}")
+            print(f"Response: {response}")
             # Extract predicted sentiment from the response
             if "Positive" in response:
                 predicted_sentiment = 2
