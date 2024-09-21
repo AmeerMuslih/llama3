@@ -34,7 +34,7 @@ def process_batch_on_gpu(generator, dialogs, max_gen_len, temperature, top_p, de
     correct_predictions = 0
     for result, true_label in zip(results, true_labels):
         response = result['generation']['content']
-        print(f"True label: {true_label}, Predicted sentiment: {response}")
+        #print(f"True label: {true_label}, Predicted sentiment: {response}")
         predicted_sentiment = 'Neutral'  # Default sentiment
         
         # Extract predicted sentiment from the response
@@ -129,7 +129,7 @@ def main(
                 ])
 
             # Submit a batch to be processed in parallel on a GPU
-            print(f"Processing batch {i}")
+            #print(f"Processing batch {i}")
             futures.append(
                 executor.submit(process_batch_on_gpu, generator, dialogs, max_gen_len, temperature, top_p, device, true_label_batch)
             )
