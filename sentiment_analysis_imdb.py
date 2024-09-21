@@ -71,7 +71,7 @@ def main(
     
     # Get available GPU devices
     num_workers = num_gpus = torch.cuda.device_count()
-    print(f"Found {num_gpus} GPUs")
+    print(f"BitFlips_number = {bitFlips_number}")
 
     # Load the model on each GPU
     generators = [
