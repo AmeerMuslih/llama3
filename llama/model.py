@@ -43,12 +43,10 @@ def FI_mul(A, B, bitFlips_number):
         _, _, _, L = B.shape
         #print(B.shape)
         result = torch.zeros((X, Y, Z, L))
-        start_time = time.time()
         
         for i in range(X):
             for j in range(Y):
                 result[i, j] = matmul_FI(A[i, j], B[i, j], bitFlips_number/(X*Y))
-        print("Time taken: ", time.time() - start_time)
         return result
 
 def helper(A, B, start_pos, layer, mul_num):
