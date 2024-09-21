@@ -1,6 +1,7 @@
 import os
 import torch
 import pandas as pd
+import glob
 
 def csvFilesMaker(all_util, Accumulator_TOT, InputA_TOT, InputB_TOT, totalCycles, dim):
 		#normalize the results by number of cycles
@@ -66,30 +67,26 @@ def main():
 	InputB_TOT = torch.zeros(dim,dim,8)
 	totalCycles = torch.zeros(1)
 
-	for i in range(150):
-		# Specify the file path of the checkpoint
-		# all_util_file = f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{i}/all_util.pt'
-		# Accumulator_TOT_file = f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{i}/Accumulator_TOT.pt'
-		# InputA_TOT_file = f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{i}/InputA_TOT.pt'
-		# InputB_TOT_file = f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{i}/InputB_TOT.pt'
-		all_util_file = f'/home/a.mosa/Ameer/llama3/OutputFiles/Group_{i}/all_util.pt'
-		Accumulator_TOT_file = f'/home/a.mosa/Ameer/llama3/OutputFiles/Group_{i}/Accumulator_TOT.pt'
-		InputA_TOT_file = f'/home/a.mosa/Ameer/llama3/OutputFiles/Group_{i}/InputA_TOT.pt'
-		InputB_TOT_file = f'/home/a.mosa/Ameer/llama3/OutputFiles/Group_{i}/InputB_TOT.pt'
-		totalCycles_file = f'/home/a.mosa/Ameer/llama3/OutputFiles/Group_{i}/cycles.pt'
+	output_files_path = '/home/a.mosa/Ameer/llama3/OutputFiles/*'
+	folders = glob.glob(output_files_path)
+
+	for folder in folders:
+		all_util_file = os.path.join(folder, 'all_util.pt')
+		Accumulator_TOT_file = os.path.join(folder, 'Accumulator_TOT.pt')
+		InputA_TOT_file = os.path.join(folder, 'InputA_TOT.pt')
+		InputB_TOT_file = os.path.join(folder, 'InputB_TOT.pt')
+		totalCycles_file = os.path.join(folder, 'cycles.pt')
 
     	# Load the tensors from the checkpoint
-		try:
-			all_util += torch.load(all_util_file)
-			Accumulator_TOT += torch.load(Accumulator_TOT_file)
-			InputA_TOT += torch.load(InputA_TOT_file)
-			InputB_TOT += torch.load(InputB_TOT_file)
-			totalCycles += torch.load(totalCycles_file)
-		except:
-			continue
+		all_util += torch.load(all_util_file)
+		Accumulator_TOT += torch.load(Accumulator_TOT_file)
+		InputA_TOT += torch.load(InputA_TOT_file)
+		InputB_TOT += torch.load(InputB_TOT_file)
+		totalCycles += torch.load(totalCycles_file)
 	
+	print(f'Number of folders: {len(folders)}')
+	print(totalCycles)
 	csvFilesMaker(all_util, Accumulator_TOT, InputA_TOT, InputB_TOT, totalCycles, dim)
-	
 
 if __name__ == "__main__":
     main()
