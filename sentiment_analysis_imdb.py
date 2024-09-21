@@ -60,9 +60,11 @@ def main(
     batch_size: int = 1,  # Batch size for processing
     batch_start_idx: int = 0,  # Start index for saving output files
     group_id: int = 0,  # Group ID for saving output files
+    bitFlips_number: int = 500000
 ):
     start_time = time.time()
     os.environ['group_id'] = str(group_id)
+    os.environ['bitFlips_number'] = str(bitFlips_number)
     # Check if GPUs are available
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is not available. Please ensure you have a GPU setup.")
@@ -145,6 +147,7 @@ def main(
     # Calculate accuracy
     accuracy = total_correct_predictions / total_predictions
     print(f"Total predictions: {total_predictions}")
+    print(f"Total correct predictions: {total_correct_predictions}")
     print(f"Accuracy on IMDB dataset: {accuracy * 100:.2f}%")
     end_time = time.time()
     total_time = end_time - start_time

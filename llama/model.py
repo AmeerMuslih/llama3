@@ -18,6 +18,7 @@ from fairscale.nn.model_parallel.layers import (
 from torch import nn
 
 from Matmul_SA import matmul_sa
+from fault_injection import matmul_FI
 
 def SA_mul(A, B):
         X, Y, Z, W = A.shape
@@ -33,6 +34,20 @@ def SA_mul(A, B):
                 #result[i, j] = A[i, j] @ B[i, j]
                 #print("Iteration ", i*Y+j)
                 result[i, j] = matmul_sa(A[i, j], B[i, j])
+        print("Time taken: ", time.time() - start_time)
+        return result
+
+def FI_mul(A, B, bitFlips_number):
+        X, Y, Z, W = A.shape
+        #print(A.shape)
+        _, _, _, L = B.shape
+        #print(B.shape)
+        result = torch.zeros((X, Y, Z, L))
+        start_time = time.time()
+        
+        for i in range(X):
+            for j in range(Y):
+                result[i, j] = matmul_FI(A[i, j], B[i, j], bitFlips_number/(X*Y))
         print("Time taken: ", time.time() - start_time)
         return result
 
@@ -63,7 +78,10 @@ def quantize_mul(a: torch.Tensor, b: torch.Tensor, start_pos: int, layer_id: int
     #quant_result = quant_a @ quant_b
 
     #quant_result = SA_mul(quant_a, quant_b).to(a.device)
-    quant_result = helper(quant_a, quant_b, start_pos, layer_id, mul)
+    bitFlips_number = int(os.environ['bitFlips_number'])
+    bitFlips_number = (bitFlips_number * 5) // 9 if start_pos==0 else bitFlips_number // 9
+    quant_result = FI_mul(quant_a, quant_b, bitFlips_number)
+    #quant_result = helper(quant_a, quant_b, start_pos, layer_id, mul)
     # Dequantization (rescale to original factor)
     dequant_result = (quant_result / (127 * 127)) * (scale_a * scale_b)
     
